@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
+<title>Universal Downloader</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root{
+  --primary:#6366f1;
+  --accent:#a855f7;
+  --bg:#0f172a;
+  --card:#111827;
+  --text:#e5e7eb;
+  --dim:#9ca3af;
+  --danger:#ef4444;
+}
+*{box-sizing:border-box;}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:radial-gradient(circle at top, #1e293b, #020617);
+  min-height:100vh;
+  margin:0;
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.container{
+  margin-top:auto;
+  margin-bottom:auto;
+  width:100%;
+  max-width:420px;
+  background:rgba(17,24,39,.9);
+  backdrop-filter:blur(12px);
+  padding:36px 26px;
+  border-radius:24px;
+  box-shadow:0 30px 60px rgba(0,0,0,.6);
+  animation:fadeIn .8s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+h2{
+  font-size:1.9rem;
+  font-weight:800;
+  text-align:center;
+  margin-bottom:6px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* Platform icons */
+.platform-icons{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:10px;
+  margin-bottom:20px;
+}
+.platform-icons i{
+  font-size:1.25rem;
+  transition:.3s ease;
+  cursor:pointer;
+  opacity:.85;
+  color:#94a3b8;
+}
+.platform-icons i:hover{
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  transform:translateY(-2px) scale(1.15);
+  text-shadow:0 0 14px rgba(139,92,246,.7);
+  opacity:1;
+}
+
+.input-group{margin-bottom:18px;}
+
+label{
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  color:var(--dim);
+  text-transform:uppercase;
+}
+input{
+  width:100%; 
+  margin-top:8px;
+  padding:14px 16px;
+  border-radius:14px;
+  border:1px solid #1f2937;
+  background:#020617;
+  color:var(--text);
+  font-size:.95rem;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.05);
+  transition:.3s;
+}
+
+input::placeholder{
+  color: #64748b;
+}
+input:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(99,102,241,.3);
+}
+
+
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 44px;
+}
+
+.toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-label {
+  position: relative;
+  display: block;
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 999px;
+  height: 44px;
+  cursor: pointer;
+  transition: .3s;
+  overflow: hidden;
+}
+
+.toggle-option {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 700;
+  color: var(--dim);
+  padding: 0 16px;
+  z-index: 2;
+  transition: color .3s;
+}
+
+.toggle-option.left {
+  left: 0;
+}
+
+.toggle-option.right {
+  right: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  height: 40px;
+  width: calc(50% - 4px);
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 999px;
+  transition: .3s;
+  z-index: 1;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+.toggle-input:checked + .toggle-label .toggle-slider {
+  transform: translateX(calc(100% + 4px));
+}
+
+.toggle-input:checked + .toggle-label .left {
+  color: var(--dim);
+}
+
+.toggle-input:not(:checked) + .toggle-label .right {
+  color: var(--dim);
+}
+
+.toggle-input:checked + .toggle-label .right {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.toggle-input:not(:checked) + .toggle-label .left {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* Custom select */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 14px 16px;
+  padding-right: 40px;
+  border-radius: 14px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text);
+  font-size: .95rem;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,.05);
+}
+
+.custom-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(99,102,241,.3);
+}
+
+.select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--dim);
+  z-index: 1;
+}
+
+.select-arrow i {
+  font-size: 0.8rem;
+}
+
+/* Quality group */
+#qualityGroup{transition:.4s ease;overflow:hidden;}
+#qualityGroup.hide{max-height:0;opacity:0;margin:0;}
+
+/* Button */
+button{
+  width:100%;
+  margin-top:10px;
+  padding:16px;
+  border-radius:16px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  color:#fff;
+  font-weight:800;
+  font-size:1rem;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 8px 20px rgba(99,102,241,.35);
+  transition:.3s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px rgba(99,102,241,.6);
+}
+button:active{
+  transform:translateY(0) scale(.98);
+  box-shadow:0 6px 16px rgba(99,102,241,.4);
+}
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  box-shadow:none;
+  transform:none;
+}
+
+/* Progress */
+#progressArea{display:none;margin-top:24px;}
+.progress-bar{
+  height:10px;
+  background:#020617;
+  border-radius:999px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  transition:.4s ease;
+}
+.status-text{
+  display:block;
+  margin-top:10px;
+  text-align:center;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  font-weight:800;
+}
+
+/* Footer */
+.app-footer {
+  width: 100%;
+  margin-top: 30px;
+  padding: 18px 10px;
+  background: rgba(2, 6, 23, 0.9);
+  border-top: 1px solid rgba(99,102,241,.25);
+  display: flex;
+  justify-content: center;
+}
+
+.footer-inner {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.footer-brand img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(99,102,241,.6));
+}
+
+.app-footer p {
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+
+#errorBox{
+  display:none;
+  margin-top:18px;
+  text-align:center;
+  color:var(--danger);
+  font-weight:700;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>Universal Downloader</h2>
+
+  <div class="platform-icons">
+    <i class="fa-brands fa-youtube"></i>
+    <i class="fa-brands fa-instagram"></i>
+    <i class="fa-brands fa-facebook"></i>
+    <i class="fa-brands fa-tiktok"></i>
+    <i class="fa-brands fa-x-twitter"></i>
+  </div>
+
+  <form id="dlForm">
+    <div class="input-group">
+      <label>Video Link</label>
+      <input type="url" name="url" placeholder="Paste any video link..." required>
+    </div>
+
+    <div class="input-group">
+      <label>Format</label>
+      <div class="toggle-switch">
+        <input type="checkbox" id="formatToggle" class="toggle-input">
+        <label for="formatToggle" class="toggle-label">
+          <span class="toggle-option left">MP4</span>
+          <span class="toggle-option right">MP3</span>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <input type="hidden" name="mode" id="formatInput" value="video">
+    </div>
+
+    <div class="input-group" id="qualityGroup">
+      <label>Quality</label>
+      <div class="select-wrapper">
+        <select name="quality" id="qualitySelect" class="custom-select">
+          <option value="360">360p</option>
+          <option value="480">480p</option>
+          <option value="720" selected>720p</option>
+          <option value="1080">1080p</option>
+          <option value="1440p">1440p</option>
+          <option value="2160p">2160p</option>
+        </select>
+        <div class="select-arrow">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" id="btnText">Download</button>
+  </form>
+
+  <div id="progressArea">
+    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+    <span class="status-text" id="status">Starting...</span>
+  </div>
+
+  <div id="errorBox"></div>
+</div>
+
+<footer class="app-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Universal Downloader Logo">
+      <span>Universal Downloader</span>
+    </div>
+    <p>© 2025 Universal Downloader · Built by Darshit Panchal</p>
+  </div>
+</footer>
+
+
+<script>
+const form=document.getElementById('dlForm');
+const area=document.getElementById('progressArea');
+const fill=document.getElementById('fill');
+const status=document.getElementById('status');
+const btn=document.getElementById('btnText');
+const qualityGroup=document.getElementById('qualityGroup');
+const formatToggle=document.getElementById('formatToggle');
+const qualitySelect=document.getElementById('qualitySelect');
+const formatInput=document.getElementById('formatInput');
+const errorBox=document.getElementById('errorBox');
+
+// Initialize format toggle
+formatInput.value = "video"; // Default to video
+
+formatToggle.addEventListener('change',()=>{
+  if(formatToggle.checked) {
+    formatInput.value = "audio";
+    qualityGroup.classList.add('hide');
+  } else {
+    formatInput.value = "video";
+    qualityGroup.classList.remove('hide');
+  }
+});
+
+// Platform icons functionality
+const platformIcons = document.querySelectorAll('.platform-icons i');
+platformIcons.forEach(icon => {
+  icon.addEventListener('click', () => {
+    // Remove active class from all icons
+    platformIcons.forEach(i => i.classList.remove('active-platform'));
+    
+    // Add active class to clicked icon
+    icon.classList.add('active-platform');
+    
+    // You can add specific functionality for each platform here
+    const platform = icon.className.replace(/.*fa-(\w+).*/, '$1');
+    console.log(`Platform selected: ${platform}`);
+  });
+});
+
+form.onsubmit = async function(e){
+  e.preventDefault();
+  errorBox.style.display='none';
+  area.style.display='block';
+  btn.disabled=true;
+  fill.style.width='0%';
+  status.innerText='Starting...';
+
+  const data=new FormData(form);
+  const poll=setInterval(async()=>{
+    const r=await fetch('/progress');
+    const d=await r.json();
+    const p=d.percent||0;
+    fill.style.width=p+'%';
+    status.innerText=`Downloading... ${p}%`;
+  },800);
+
+  try{
+    const resp=await fetch('/',{method:'POST',body:data});
+    if(!resp.ok) throw new Error('Download failed');
+    const blob=await resp.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=''; a.click();
+    URL.revokeObjectURL(url);
+  }catch(err){
+    errorBox.innerText=err.message;
+    errorBox.style.display='block';
+  }finally{
+    clearInterval(poll);
+    btn.disabled=false;
+    area.style.display='none';
+  }
+};
+</script>
+</body>
+</html>
