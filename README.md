@@ -2,7 +2,7 @@
 
 Universal Downloader is a sleek, dark-themed web app to download videos or extract audio from multiple platforms. It supports MP4 and MP3 formats, quality selection, and real-time progress — all powered by Flask and yt-dlp.
 
-![Universal Downloader](static/logo-dark.png)
+![Universal Downloader](static/logo.png)
 
 ---
 
